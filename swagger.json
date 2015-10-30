@@ -229,7 +229,6 @@
                         "name": "request_transfer",
                         "in": "formData",
                         "description": "Include this and set to true to request transfer of an existing device.",
-                        "required": false,
                         "type": "boolean"
                     }
                 ],
@@ -377,6 +376,9 @@
                     "Device"
                 ],
                 "summary": "Call a function exposed by the device, with arguments passed in the request body.",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
                 "parameters": [
                     {
                         "$ref": "#/parameters/DeviceID-Path"
@@ -384,8 +386,14 @@
                     {
                         "name": "name",
                         "in": "path",
-                        "description": "Variable name",
+                        "description": "Function name",
                         "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "arg",
+                        "in": "formData",
+                        "description": "Function argument",
                         "type": "string"
                     }
                 ],
@@ -525,18 +533,18 @@
         "DeviceID-Path": {
             "name": "deviceID",
             "in": "path",
-            "description": "A 20 character device ID",
+            "description": "A 24 character device ID",
             "required": true,
             "type": "string",
-            "pattern": "[a-fA-F0-9]{20}"
+            "pattern": "[a-fA-F0-9]{24}"
         },
         "DeviceID-FormData": {
             "name": "id",
             "in": "formData",
-            "description": "Device ID",
+            "description": "A 24 character device ID",
             "required": true,
             "type": "string",
-            "pattern": "[a-fA-F0-9]{20}"
+            "pattern": "[a-fA-F0-9]{24}"
         }
     },
     "securityDefinitions": {
@@ -546,7 +554,7 @@
         },
         "basicUser": {
             "type": "basic",
-            "description": "Used to authenticate your account for access token management, this is your particle username and password)"
+            "description": "Used to authenticate your account for access token management (this is your particle username and password)"
         },
         "accessToken": {
             "type": "apiKey",
