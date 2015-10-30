@@ -1,0 +1,568 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Particle API",
+        "version": "1.0.0"
+    },
+    "host": "api.particle.io",
+    "schemes": [
+        "https"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/oauth/token": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Creates an access token that gives you access to the Cloud API.",
+                "description": "You must give a valid client ID and password in HTTP Basic Auth. For controlling your own developer account, you can use particle:particle. Otherwise use a valid OAuth Client ID and Secret.",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "grant_type",
+                        "in": "formData",
+                        "description": "OAuth grant type. Usually password.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "username",
+                        "in": "formData",
+                        "description": "Your Particle account username",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "formData",
+                        "description": "Your Particle account password",
+                        "required": true,
+                        "type": "string",
+                        "format": "password"
+                    },
+                    {
+                        "name": "expires_in",
+                        "in": "formData",
+                        "description": "How many seconds the token will be valid for. 0 means forever. Short lived tokens are better for security.",
+                        "type": "number"
+                    },
+                    {
+                        "name": "expires_at",
+                        "in": "formData",
+                        "description": "When should the token expire? This should be an ISO8601 formatted date string.",
+                        "type": "string",
+                        "format": "date"
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "basicOAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/access_tokens": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Retrieve a list of all the issued access tokens for your account",
+                "responses": {
+                    "200": {
+                        "description": "An array of products",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/AccessTokenInfo"
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "basicUser": []
+                    }
+                ]
+            }
+        },
+        "/v1/access_tokens/{accessToken}": {
+            "delete": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Delete your unused or lost tokens.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/AccessToken"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Whether or not the token was deleted",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "basicUser": []
+                    }
+                ]
+            }
+        },
+        "/v1/devices": {
+            "get": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "List devices the currently authenticated user has access to.",
+                "responses": {
+                    "200": {
+                        "description": "Array of devices",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/DeviceInfo"
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Claim a new or unclaimed device to your account or request transfer from another user.",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/DeviceID-FormData"
+                    },
+                    {
+                        "name": "request_transfer",
+                        "in": "formData",
+                        "description": "Include this and set to true to request transfer of an existing device.",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Claimed"
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
+        },
+        "/v1/devices/{deviceID}": {
+            "get": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Get basic information about the given device, including the custom variables and functions it has exposed.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/DeviceID-Path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of devices",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/DeviceInfo"
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
+        },
+        "/v1/devices/{deviceID}/{name}": {
+            "get": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Request the current value of a variable exposed by the device.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/DeviceID-Path"
+                    },
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Variable name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "format",
+                        "in": "query",
+                        "description": "Specify raw if you just the value returned",
+                        "type": "string",
+                        "enum": [
+                            "raw"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of devices",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/DeviceInfo"
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Call a function exposed by the device, with arguments passed in the request body.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/DeviceID-Path"
+                    },
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "Variable name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "?",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
+        }
+    },
+    "responses": {
+        "BadRequest": {
+            "description": "Your request is not understood by the device, or the requested subresource (variable/function) has not been exposed."
+        },
+        "Unauthorized": {
+            "description": "Your access token is not valid."
+        },
+        "Forbidden": {
+            "description": "Your access token is not authorized to interface with this device."
+        },
+        "NotFound": {
+            "description": "The device you requested is not currently connected to the cloud."
+        },
+        "TimedOut": {
+            "description": "The cloud experienced a significant delay when trying to reach the device."
+        },
+        "ServerError": {
+            "description": "Fail whale. Something's wrong on our end."
+        }
+    },
+    "definitions": {
+        "AccessToken": {
+            "type": "string",
+            "pattern": "[a-fA-F0-9]{40}"
+        },
+        "AccessTokenInfo": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "$ref": "#/definitions/AccessToken"
+                },
+                "expires_at": {
+                    "type": "string",
+                    "format": "dateTime"
+                },
+                "client": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "token",
+                "expires_at",
+                "client"
+            ]
+        },
+        "DeviceID": {
+            "type": "string",
+            "pattern": "[a-fA-F0-9]{20}"
+        },
+        "DeviceInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "$ref": "#/definitions/DeviceID"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "last_app": {
+                    "type": "string"
+                },
+                "last_ip_address": {
+                    "type": "string"
+                },
+                "last_heard": {
+                    "type": "string",
+                    "format": "dateTime"
+                },
+                "product_id": {
+                    "$ref": "#/definitions/ProductID"
+                },
+                "connected": {
+                    "type": "boolean"
+                },
+                "last_iccid": {
+                    "type": "string"
+                },
+                "imei": {
+                    "type": "string"
+                }
+            }
+        },
+        "ProductID": {
+            "type": "number",
+            "enum": [
+                0,
+                6
+            ]
+        }
+    },
+    "parameters": {
+        "AccessToken": {
+            "name": "accessToken",
+            "in": "path",
+            "description": "A 40 character access token",
+            "required": true,
+            "type": "string",
+            "pattern": "[a-fA-F0-9]{40}"
+        },
+        "DeviceID-Path": {
+            "name": "deviceID",
+            "in": "path",
+            "description": "A 20 character device ID",
+            "required": true,
+            "type": "string",
+            "pattern": "[a-fA-F0-9]{20}"
+        },
+        "DeviceID-FormData": {
+            "name": "id",
+            "in": "formData",
+            "description": "Device ID",
+            "required": true,
+            "type": "string",
+            "pattern": "[a-fA-F0-9]{20}"
+        }
+    },
+    "securityDefinitions": {
+        "basicOAuth": {
+            "type": "basic",
+            "description": "Used to obtain an oauth token, should be particle:particle (your particle username and password are passed as parameters)"
+        },
+        "basicUser": {
+            "type": "basic",
+            "description": "Used to authenticate your account for access token management, this is your particle username and password)"
+        },
+        "accessToken": {
+            "type": "apiKey",
+            "description": "Used for methods that require an Access Token, must be in the format 'Bearer {yourAccessToken}' e.g. 'Bearer 01234556789abcdef012345667890abcdef01234567'",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Methods used to authenticate a user and create / list / delete access tokens"
+        },
+        {
+            "name": "Device",
+            "description": "Methods associated with devices"
+        }
+    ]
+}
