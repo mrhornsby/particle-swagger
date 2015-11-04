@@ -429,6 +429,224 @@
                     }
                 ]
             }
+        },
+        "/v1/events/{eventPrefix}": {
+            "get": {
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Open a stream of Server Sent Events for all public events for all devices.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/EventPrefix"
+                    }
+                ],
+                "produces": [
+                    "text/event-stream"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Server sent event stream",
+                        "schema": {
+                            "type": "string",
+                            "format": "binary"
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
+        },
+        "/v1/devices/events/{eventPrefix}": {
+            "get": {
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Open a stream of Server Sent Events for all public events and private events for your devices.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/EventPrefix"
+                    }
+                ],
+                "produces": [
+                    "text/event-stream"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Server sent event stream",
+                        "schema": {
+                            "type": "string",
+                            "format": "binary"
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
+        },
+        "/v1/devices/{deviceID}/events/{eventPrefix}": {
+            "get": {
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Open a stream of Server Sent Events for all public events and private events for your devices.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/DeviceID-Path"
+                    },
+                    {
+                        "$ref": "#/parameters/EventPrefix"
+                    }
+                ],
+                "produces": [
+                    "text/event-stream"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Server sent event stream",
+                        "schema": {
+                            "type": "string",
+                            "format": "binary"
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
+        },
+        "/v1/devices/events": {
+            "post": {
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Publish an event",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "Event name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "data",
+                        "in": "formData",
+                        "description": "Event data",
+                        "type": "string"
+                    },
+                    {
+                        "name": "private",
+                        "in": "formData",
+                        "description": "If you wish this event to be publicly visible",
+                        "type": "boolean"
+                    },
+                    {
+                        "name": "ttl",
+                        "in": "formData",
+                        "description": "How long the event should persist",
+                        "type": "number",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Server sent event stream",
+                        "schema": {
+                            "type": "string",
+                            "format": "binary"
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
         }
     },
     "responses": {
@@ -545,6 +763,13 @@
             "required": true,
             "type": "string",
             "pattern": "[a-fA-F0-9]{24}"
+        },
+        "EventPrefix": {
+            "name": "eventPrefix",
+            "in": "path",
+            "description": "Filters the stream to only events starting with the specified prefix",
+            "required": true,
+            "type": "string"
         }
     },
     "securityDefinitions": {
