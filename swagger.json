@@ -307,6 +307,84 @@
                         "accessToken": []
                     }
                 ]
+            },
+            "put": {
+                "tags": [
+                    "Firmware"
+                ],
+                "summary": "Flash a device.",
+                "consumes": [
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/DeviceID-Path"
+                    },
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "The desired name for the device",
+                        "type": "string"
+                    },
+                    {
+                        "name": "file",
+                        "in": "formData",
+                        "description": "The file to flash to the device. A compiled binary image if file_type is set to binary, a source file otherwise.",
+                        "type": "file"
+                    },
+                    {
+                        "name": "file_type",
+                        "in": "formData",
+                        "description": "The type of the file being uploaded. MUST be set to binary if the file being uploaded is a compiled image. Can be ommitted otherwise.",
+                        "type": "string",
+                        "enum": [
+                            "binary"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Device id and name if it has been re-named",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "$ref": "#/definitions/DeviceID"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id"
+                            ]
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
             }
         },
         "/v1/devices/{deviceID}/{name}": {
