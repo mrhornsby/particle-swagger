@@ -416,7 +416,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Array of devices",
+                        "description": "Array of device info",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -725,6 +725,162 @@
                     }
                 ]
             }
+        },
+        "/v1/orgs": {
+            "get": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "List Organizations the currently authenticated user has access to.",
+                "responses": {
+                    "200": {
+                        "description": "List of organizations.",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "organization": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "slug": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            },
+                                            "products": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
+        },
+        "/v1/orgs/{slug}": {
+            "get": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Retrieves the details of the requested organization that you belong to.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/Slug"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of organizations."
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
+        },
+        "/v1/orgs/{slug}/users/{username}": {
+            "delete": {
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Remove a current team member from your organization.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/Slug"
+                    },
+                    {
+                        "name": "username",
+                        "in": "path",
+                        "description": "Username of the team member to be removed.",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User deleted?"
+                    },
+                    "400": {
+                        "$ref": "#/responses/BadRequest"
+                    },
+                    "401": {
+                        "$ref": "#/responses/Unauthorized"
+                    },
+                    "403": {
+                        "$ref": "#/responses/Forbidden"
+                    },
+                    "404": {
+                        "$ref": "#/responses/NotFound"
+                    },
+                    "408": {
+                        "$ref": "#/responses/TimedOut"
+                    },
+                    "500": {
+                        "$ref": "#/responses/ServerError"
+                    }
+                },
+                "security": [
+                    {
+                        "accessToken": []
+                    }
+                ]
+            }
         }
     },
     "responses": {
@@ -848,6 +1004,13 @@
             "description": "Filters the stream to only events starting with the specified prefix",
             "required": true,
             "type": "string"
+        },
+        "Slug": {
+            "name": "slug",
+            "in": "path",
+            "description": "Organization Slug",
+            "required": true,
+            "type": "string"
         }
     },
     "securityDefinitions": {
@@ -869,11 +1032,23 @@
     "tags": [
         {
             "name": "Authentication",
-            "description": "Methods used to authenticate a user and create / list / delete access tokens"
+            "description": "Methods used to authenticate a user and create / list / delete access tokens."
         },
         {
             "name": "Device",
-            "description": "Methods associated with devices"
+            "description": "Methods associated with devices."
+        },
+        {
+            "name": "Firmware",
+            "description": "Methods allowing updating of a devices firmware."
+        },
+        {
+            "name": "Events",
+            "description": "Methods for sending / receiveing events to / from devices."
+        },
+        {
+            "name": "Organization",
+            "description": "Methods for administering organizations."
         }
     ]
 }
